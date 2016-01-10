@@ -1,4 +1,5 @@
 CONFIG_USB_ANDROID_SAMSUNG_MTP=n
+CONFIG_NTFS_FS=y
 
 # from msm8974_sec_defconfig
 CONFIG_AUDIT=y
