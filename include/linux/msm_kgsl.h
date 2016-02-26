@@ -38,6 +38,27 @@
 
 #define KGSL_CONTEXT_INVALID 0xffffffff
 
+/*
+ * --- command batch flags ---
+ * The bits that are linked to a KGSL_CONTEXT equivalent are either legacy
+ * definitions or bits that are valid for both contexts and cmdbatches.  To be
+ * safe the other 8 bits that are still available in the context field should be
+ * omitted here in case we need to share - the other bits are available for
+ * cmdbatch only flags as needed
+ */
+#define KGSL_CMDBATCH_MEMLIST	0x00000001
+#define KGSL_CMDBATCH_MARKER	0x00000002
+#define KGSL_CMDBATCH_SUBMIT_IB_LIST	KGSL_CONTEXT_SUBMIT_IB_LIST /* 0x004 */
+#define KGSL_CMDBATCH_CTX_SWITCH	KGSL_CONTEXT_CTX_SWITCH     /* 0x008 */
+#define KGSL_CMDBATCH_END_OF_FRAME	KGSL_CONTEXT_END_OF_FRAME   /* 0x100 */
+#define KGSL_CMDBATCH_SYNC		KGSL_CONTEXT_SYNC           /* 0x400 */
+#define KGSL_CMDBATCH_PWR_CONSTRAINT	KGSL_CONTEXT_PWR_CONSTRAINT /* 0x800 */
+
+/*
+ * Reserve bits [16:19] and bits [28:31] for possible bits shared between
+ * contexts and command batches.  Update this comment as new flags are added.
+ */
+
 /* --- Memory allocation flags --- */
 
 /* General allocation hints */
@@ -852,6 +873,9 @@ struct kgsl_cmd_syncpoint {
 	void __user *priv;
 	unsigned int size;
 };
+
+/* Flag to indicate that the cmdlist may contain memlists */
+#define KGSL_IBDESC_MEMLIST 0x1
 
 /**
  * struct kgsl_submit_commands - Argument to IOCTL_KGSL_SUBMIT_COMMANDS
