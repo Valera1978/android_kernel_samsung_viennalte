@@ -813,6 +813,10 @@ define rule_vmlinux__
 		/bin/false;                                                  \
 	fi;
 	$(verify_kallsyms)
+
+	$(if $(CONFIG_CRYPTO_FIPS),								
+ 	@$(kecho) '  FIPS : Generating hmac of crypto and updating vmlinux... ';	      		
+ 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/fips_crypto_hmac.sh $(objtree)/vmlinux $(objtree)/System.map)
 endef
 
 
