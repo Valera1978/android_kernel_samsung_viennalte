@@ -2066,7 +2066,7 @@ static int ene_ms_init(struct us_data *us)
 {
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
 	int result;
-	u8 buf[0x200];
+	u8 buf[0x190];
 	u16 MSP_BlockSize, MSP_UserAreaBlocks;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
 
@@ -2082,7 +2082,7 @@ static int ene_ms_init(struct us_data *us)
 
 	memset(bcb, 0, sizeof(struct bulk_cb_wrap));
 	bcb->Signature = cpu_to_le32(US_BULK_CB_SIGN);
-	bcb->DataTransferLength = 0x200;
+	bcb->DataTransferLength = 0x190;
 	bcb->Flags      = US_BULK_FLAG_IN;
 	bcb->CDB[0]     = 0xF1;
 	bcb->CDB[1]     = 0x01;
@@ -2120,7 +2120,7 @@ static int ene_ms_init(struct us_data *us)
 static int ene_sd_init(struct us_data *us)
 {
 	int result;
-	u8  buf[0x200];
+	u8  buf[0x190];
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
 
@@ -2152,7 +2152,7 @@ static int ene_sd_init(struct us_data *us)
 
 	memset(bcb, 0, sizeof(struct bulk_cb_wrap));
 	bcb->Signature = cpu_to_le32(US_BULK_CB_SIGN);
-	bcb->DataTransferLength = 0x200;
+	bcb->DataTransferLength = 0x190;
 	bcb->Flags              = US_BULK_FLAG_IN;
 	bcb->CDB[0]             = 0xF1;
 
