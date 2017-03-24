@@ -746,7 +746,6 @@ static void flip_cover_work(struct work_struct *work)
 #else
 	if ((comp_val[0] == comp_val[1]) && (comp_val[0] == comp_val[2])) {
 #endif
-		ddata->flip_code = SW_LID; // cm fix
 		if (ddata->flip_code == SW_LID)
 			ddata->flip_cover = !gpio_get_value(ddata->gpio_flip_cover);
 		else
@@ -780,7 +779,6 @@ static void flip_cover_work(struct work_struct *work)
 		container_of(work, struct gpio_keys_drvdata,
 				flip_cover_dwork.work);
 
-	ddata->flip_code = SW_LID; // cm fix
 	if (ddata->flip_code == SW_LID)
 		ddata->flip_cover = !gpio_get_value(ddata->gpio_flip_cover);
 	else
@@ -1035,7 +1033,7 @@ static ssize_t sysfs_hall_debounce_store(struct device *dev,
 	return count;
 }
 
-static DEVICE_ATTR(hall_irq_ctrl, S_IRUGO | S_IWUGO,
+static DEVICE_ATTR(hall_irq_ctrl, 0660,
 			sysfs_hall_debounce_show,
 			sysfs_hall_debounce_store);
 #endif
@@ -1466,7 +1464,7 @@ static int __devinit gpio_keys_probe(struct platform_device *pdev)
 #ifdef CONFIG_SENSORS_HALL
 	if(ddata->gpio_flip_cover != 0) {
 		input->evbit[0] |= BIT_MASK(EV_SW);
-		input_set_capability(input, EV_SW, SW_LID); // cm fix
+		input_set_capability(input, EV_SW, ddata->flip_code);
 	}
 #endif
 #ifdef CONFIG_SENSORS_HALL_IRQ_CTRL

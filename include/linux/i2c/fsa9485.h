@@ -190,6 +190,10 @@ enum {
 };
 
 enum {
+	FSA9485_MMDOCK_ATTACHED = 2
+};
+
+enum {
 	FSA9485_DETACHED_DOCK = 0,
 	FSA9485_ATTACHED_DESK_DOCK,
 	FSA9485_ATTACHED_CAR_DOCK,
@@ -214,7 +218,7 @@ struct fsa9485_platform_data {
 	void (*charger_cb) (bool attached);
 	void (*in_charger_cb) (bool attached);
 	void (*jig_cb) (bool attached);
-	void (*mhl_cb) (bool attached);
+	void (*mhl_cb) (int attached);
 	void (*reset_cb) (void);
 	void (*set_init_flag) (void);
 	void (*mhl_sel) (bool onoff);

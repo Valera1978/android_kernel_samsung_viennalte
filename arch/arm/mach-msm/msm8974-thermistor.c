@@ -1023,7 +1023,7 @@ static struct sec_therm_platform_data sec_therm_pdata = {
 	.get_siop_level = get_msm8974_siop_level,
 #if defined(CONFIG_MACH_HLTEDCM) || defined(CONFIG_MACH_HLTEKDI) || \
 	defined(CONFIG_MACH_JS01LTEDCM) || defined(CONFIG_MACH_KLTE_JPN) || \
-	defined(CONFIG_MACH_KACTIVELTE_DCM)
+	defined(CONFIG_MACH_KACTIVELTE_DCM) || defined(CONFIG_MACH_KLIMT_LTE_DCM)
 	#if defined(CONFIG_MACH_HLTEDCM) || defined(CONFIG_MACH_HLTEKDI)
 	.adc_flash_arr_size = ARRAY_SIZE(temper_table_flash),
 	.adc_table_flash = temper_table_flash,

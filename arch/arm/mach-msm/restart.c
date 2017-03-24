@@ -281,6 +281,9 @@ static irqreturn_t resout_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+#if defined CONFIG_ID_BYPASS_SBL
+extern int otg_attached;
+#endif
 static void msm_restart_prepare(const char *cmd)
 {
 	unsigned long value;
@@ -391,8 +394,17 @@ static void msm_restart_prepare(const char *cmd)
 			warm_reboot_set = 1;
 #endif
 		} else {
-			__raw_writel(0x77665501, restart_reason);
+#if defined CONFIG_ID_BYPASS_SBL
+			if(otg_attached)
+			{
+				__raw_writel(0x77665509, restart_reason);
+				warm_reboot_set = 1;
+			}
+			else
+#endif
+				__raw_writel(0x77665501, restart_reason);
 		}
+
 		printk(KERN_NOTICE "%s : restart_reason = 0x%x\n",
 				__func__, __raw_readl(restart_reason));
 	}

@@ -42,6 +42,8 @@
 #include <linux/ecryptfs.h>
 #ifdef CONFIG_SDP
 #include <sdp/dek_common.h>
+#include <linux/list.h>
+#include <linux/spinlock.h>
 #endif
 
 #ifdef CONFIG_WTL_ENCRYPTION_FILTER
@@ -154,7 +156,7 @@ ecryptfs_get_key_payload_data(struct key *key)
 #define ECRYPTFS_SIZE_AND_MARKER_BYTES (ECRYPTFS_FILE_SIZE_BYTES \
 					+ MAGIC_ECRYPTFS_MARKER_SIZE_BYTES)
 #define ECRYPTFS_DEFAULT_CIPHER "aes"
-#define ECRYPTFS_DEFAULT_KEY_BYTES 16
+#define ECRYPTFS_DEFAULT_KEY_BYTES 32
 #define ECRYPTFS_DEFAULT_HASH "md5"
 #define ECRYPTFS_SHA256_HASH "sha256"
 #define ECRYPTFS_TAG_70_DIGEST ECRYPTFS_DEFAULT_HASH
@@ -243,7 +245,11 @@ struct ecryptfs_crypt_stat {
 #ifdef CONFIG_SDP
 #define ECRYPTFS_DEK_SDP_ENABLED      0x00100000
 #define ECRYPTFS_DEK_IS_SENSITIVE     0x00200000
-
+#define ECRYPTFS_DEK_MULTI_ENGINE     0x00400000 // eCryptfs header contains engine id.
+#define ECRYPTFS_SDP_IS_CHAMBER_DIR   0x02000000
+#endif
+#ifdef CONFIG_DLP
+#define ECRYPTFS_DLP_ENABLED		  0x04000000
 #endif
 
 	u32 flags;
@@ -267,7 +273,7 @@ struct ecryptfs_crypt_stat {
 	struct mutex cs_hash_tfm_mutex;
 	struct mutex cs_mutex;
 #ifdef CONFIG_SDP
-	int userid;
+	int engine_id;
 	dek_t sdp_dek;
 #endif
 };
@@ -280,9 +286,6 @@ struct ecryptfs_inode_info {
 	atomic_t lower_file_count;
 	struct file *lower_file;
 	struct ecryptfs_crypt_stat crypt_stat;
-#ifdef CONFIG_SDP
-	int userid;
-#endif
 };
 
 /* dentry private data. Each dentry must keep track of a lower
@@ -373,6 +376,9 @@ struct ecryptfs_mount_crypt_stat {
 #ifdef CONFIG_SDP
 #define ECRYPTFS_MOUNT_SDP_ENABLED             0x80000000
 #endif
+#ifdef CONFIG_DLP
+#define ECRYPTFS_MOUNT_DLP_ENABLED             0x40000000
+#endif
 
 	u32 flags;
 	struct list_head global_auth_tok_list;
@@ -393,6 +399,9 @@ struct ecryptfs_mount_crypt_stat {
 #endif
 #ifdef CONFIG_SDP
 	int userid;
+	struct list_head chamber_dir_list;
+	spinlock_t chamber_dir_list_lock;
+	int partition_id;
 #endif
 
 };

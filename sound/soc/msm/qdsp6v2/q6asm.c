@@ -47,6 +47,7 @@
 #define TRUE        0x01
 #define FALSE       0x00
 
+#define FRAME_NUM   (8)
 /* TODO, combine them together */
 static DEFINE_MUTEX(session_lock);
 struct asm_mmap {
@@ -961,6 +962,9 @@ int q6asm_audio_client_buf_alloc(unsigned int dir,
 			pr_debug("%s: buffer already allocated\n", __func__);
 			return 0;
 		}
+
+		if (bufcnt != FRAME_NUM)
+			goto fail;		
 		mutex_lock(&ac->cmd_lock);
 		buf = kzalloc(((sizeof(struct audio_buffer))*bufcnt),
 				GFP_KERNEL);
@@ -3866,6 +3870,46 @@ int q6asm_set_lrsm(struct audio_client *ac,int *param)
 	/* LRSM paramerters */
 	cmd.sm = param[0];
 	cmd.lr = param[1];
+	rc = apr_send_pkt(ac->apr, (uint32_t *)&cmd);
+	if (rc < 0) {
+		rc = -EINVAL;
+		goto fail_cmd;
+	}
+
+fail_cmd:
+	return rc;
+}
+
+
+int q6asm_set_msp(struct audio_client *ac, long *param)
+{
+	int sz = 0;
+	int rc  = 0;
+	struct asm_stream_cmd_set_pp_params_msp cmd;
+
+	if(ac == NULL) {
+		pr_err("%s: audio client is null\n", __func__);
+		return -1;
+	}
+
+	sz = sizeof(struct asm_stream_cmd_set_pp_params_msp);
+	q6asm_add_hdr_async(ac, &cmd.hdr, sz, TRUE);
+
+	cmd.hdr.opcode = ASM_STREAM_CMD_SET_PP_PARAMS_V2;
+	cmd.param.data_payload_addr_lsw = 0;
+	cmd.param.data_payload_addr_msw = 0;
+	cmd.param.mem_map_handle = 0;
+	cmd.param.data_payload_size =
+			sizeof(cmd) - sizeof(cmd.hdr) - sizeof(cmd.param);
+	cmd.data.module_id = ASM_MODULE_ID_PP_SA_MSP;
+	cmd.data.param_id = ASM_MODULE_ID_PP_SA_MSP_PARAM;
+	cmd.data.param_size = cmd.param.data_payload_size - sizeof(cmd.data);
+	cmd.data.reserved = 0;
+
+	/* VSP paramerters */
+	cmd.msp_int = param[0];
+	pr_info("%s: %d\n", __func__, cmd.msp_int);
+
 	rc = apr_send_pkt(ac->apr, (uint32_t *)&cmd);
 	if (rc < 0) {
 		rc = -EINVAL;
