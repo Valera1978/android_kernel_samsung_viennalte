@@ -10,5 +10,9 @@ rm -rf output
 mkdir output
 
 make -C $(pwd) O=output VARIANT_DEFCONFIG=msm8974_sec_viennalteeur_cm_defconfig msm8974_sec_defconfig SELINUX_DEFCONFIG=selinux_defconfig
+#make -C $(pwd) O=output VARIANT_DEFCONFIG=msm8974_sec_lt03eur_cm_defconfig msm8974_sec_defconfig SELINUX_DEFCONFIG=selinux_defconfig
+#make -C $(pwd) O=output  VARIANT_DEFCONFIG=msm8974_sec_lt03ktt_cm_defconfig msm8974_sec_defconfig SELINUX_DEFCONFIG=selinux_defconfig
+#make -C $(pwd) O=output  VARIANT_DEFCONFIG=msm8974_sec_lt03lgt_cm_defconfig msm8974_sec_defconfig SELINUX_DEFCONFIG=selinux_defconfig
+#make -C $(pwd) O=output  VARIANT_DEFCONFIG=msm8974_sec_lt03skt_cm_defconfig msm8974_sec_defconfig SELINUX_DEFCONFIG=selinux_defconfig
 make -C $(pwd) O=output -j6
 #make -C $(pwd) O=output CONFIG_DEBUG_SECTION_MISMATCH=y
